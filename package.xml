@@ -23,5 +23,7 @@
 	<instructions type="install">
 		<instruction type="file" />
 		<instruction type="acpTemplate" />
+		<instruction type="option" />
+		<instruction type="language" />
 	</instructions>
 </package>
