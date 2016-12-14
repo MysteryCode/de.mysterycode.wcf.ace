@@ -3,25 +3,21 @@
 {/if}
 {event name='javascriptIncludes'}
 
-<textarea id="{$aceSelector}Textarea" rows="20" cols="40" name="{$aceSelector}" style="display: none;"></textarea>
-
 {if $aceMode|isset}
 	<script data-relocate="true">
 		$(function() {
-			textarea = $('#{@$aceSelector|encodeJS}Textarea');
-
-			var editor = ace.edit('{@$aceSelector|encodeJS}');
-
-			editor.setTheme('ace/theme/woltlab');
+			var textarea = $('#{@$aceSelector|encodeJS}').css('display', 'none');
+			textarea.parent().prepend('<div id="ace_{$aceSelector}" class="aceInstance"></div>');
+			var editor = ace.edit('ace_{@$aceSelector|encodeJS}');
+			editor.setTheme('ace/theme/{ACE_THEME}');
 			editor.getSession().setMode('ace/mode/{@$aceMode|encodeJS}');
-			editor.resize();
-			console.log(textarea.val());
+			editor.setShowPrintMargin(false);
+			editor.getSession().setUseSoftTabs(false);
+			{if $showInvisibles|isset && $showInvisibles}editor.setShowInvisibles(true);{/if}
 			editor.getSession().setValue(textarea.val());
-
 			textarea.val(editor.getSession().getValue());
-			editor.getSession().on('change', function () {
-				textarea.val(editor.getSession().getValue());
-			});
+			editor.getSession().on('change', function () { textarea.val(editor.getSession().getValue()); });
+			{event name='aceInit'}
 		});
 	</script>
 {/if}

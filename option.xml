@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data xmlns="http://www.woltlab.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.woltlab.com https://mysterycode.de/XSD/option.xsd">
+	<import>
+		<categories>
+			<category name="general.system.ace">
+				<parent>general.system</parent>
+			</category>
+		</categories>
+		<options>
+			<option name="ace_theme">
+				<optiontype>select</optiontype>
+				<selectoptions>[<![CDATA[chrome:Chrome
+github:GitHub
+monokai:Monokai
+twilight:Twilight]]></selectoptions>
+				<defaultvalue>chrome</defaultvalue>
+				<categoryname>fireball.general</categoryname>
+			</option>
+		</options>
+	</import>
+</data>
