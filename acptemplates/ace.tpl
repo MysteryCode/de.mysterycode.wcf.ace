@@ -1,5 +1,5 @@
 {if !$aceLoaded|isset}
-	<script data-relocate="true" src="{@$__wcf->getPath()}js/3rdParty/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script data-relocate="true" src="{@$__wcf->getPath()}js/3rdParty/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 {/if}
 {event name='javascriptIncludes'}
 
