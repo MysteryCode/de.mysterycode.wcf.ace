@@ -14,7 +14,7 @@ github:GitHub
 monokai:Monokai
 twilight:Twilight]]></selectoptions>
 				<defaultvalue>chrome</defaultvalue>
-				<categoryname>fireball.general</categoryname>
+				<categoryname>general.system.ace</categoryname>
 			</option>
 		</options>
 	</import>
