@@ -9,7 +9,7 @@
 		<options>
 			<option name="ace_theme">
 				<optiontype>select</optiontype>
-				<selectoptions>[<![CDATA[chrome:Chrome
+				<selectoptions><![CDATA[chrome:Chrome
 github:GitHub
 monokai:Monokai
 twilight:Twilight]]></selectoptions>
