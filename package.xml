@@ -3,8 +3,8 @@
 	<packageinformation>
 		<packagename>ACE Codeeditor</packagename>
 		<packagedescription><![CDATA[Implements an alternative to CodeMirror]]></packagedescription>
-		<version>1.0.0 Alpha 2</version>
-		<date>2017-09-04</date>
+		<version>1.0.0</version>
+		<date>2017-11-05</date>
 	</packageinformation>
 
 	<authorinformation>
@@ -12,8 +12,12 @@
 		<authorurl><![CDATA[https://www.mysterycode.de]]></authorurl>
 	</authorinformation>
 
+	<compatibility>
+		<api version="2018" />
+	</compatibility>
+
 	<requiredpackages>
-		<requiredpackage minversion="3.0.0 Alpha 1">com.woltlab.wcf</requiredpackage>
+		<requiredpackage minversion="3.0.0">com.woltlab.wcf</requiredpackage>
 	</requiredpackages>
 
 	<excludedpackages>
@@ -27,7 +31,7 @@
 		<instruction type="language" />
 	</instructions>
 
-	<instructions type="update" fromversion="1.0.0 Alpha 1">
+	<instructions type="update" fromversion="1.0.0 Alpha 2">
 		<instruction type="file" />
 		<instruction type="acpTemplate" />
 		<instruction type="option" />
