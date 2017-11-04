@@ -10,6 +10,7 @@
 			textarea.parent().prepend('<div id="ace_{$aceSelector}" class="aceInstance"></div>');
 			var editor = ace.edit('ace_{@$aceSelector|encodeJS}');
 			editor.setTheme('ace/theme/{ACE_THEME}');
+			{if $aceMode == 'php-start'}editor.getSession().$options['startState'] = { name: 'startState', value: 'start' }; editor.getSession().setOptions({ startState: 'php-start' });{assign var=aceMode value='php'}{/if}
 			editor.getSession().setMode('ace/mode/{@$aceMode|encodeJS}');
 			editor.setShowPrintMargin(false);
 			editor.getSession().setUseSoftTabs(false);
