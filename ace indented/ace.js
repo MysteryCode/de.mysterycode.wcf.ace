@@ -6108,6 +6108,7 @@ var config = require("./config");
 var MAX_TOKEN_COUNT = 2000;
 var Tokenizer = function(rules) {
     this.states = rules;
+    this.startState = "start";
 
     this.regExps = {};
     this.matchMappings = {};
@@ -6188,7 +6189,11 @@ var Tokenizer = function(rules) {
 };
 
 (function() {
-    this.$setMaxTokenCount = function(m) {
+	this.setStartState = function(startState) {
+		this.startState = startState;
+	};
+
+	this.$setMaxTokenCount = function(m) {
         MAX_TOKEN_COUNT = m | 0;
     };
     
@@ -6282,7 +6287,7 @@ var Tokenizer = function(rules) {
         } else
             var stack = [];
 
-        var currentState = startState || "start";
+        var currentState = startState || this.startState;
         var state = this.states[currentState];
         if (!state) {
             currentState = "start";
@@ -10174,6 +10179,10 @@ EditSession.$uid = 0;
         if(tokenizer.addEventListener !== undefined) {
             var onReloadTokenizer = this.onReloadTokenizer.bind(this);
             tokenizer.addEventListener("update", onReloadTokenizer);
+        }
+
+        if (this.$options.startState) {
+                tokenizer.setStartState(this.getOption('startState'));
         }
 
         if (!this.bgTokenizer) {
