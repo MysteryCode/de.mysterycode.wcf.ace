@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package name="de.mysterycode.wcf.ace" xmlns="http://www.woltlab.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.woltlab.com http://www.woltlab.com/XSD/vortex/package.xsd">
+<package name="de.mysterycode.wcf.ace" xmlns="http://www.woltlab.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.woltlab.com http://www.woltlab.com/XSD/tornado/package.xsd">
 	<packageinformation>
 		<packagename>ACE Codeeditor</packagename>
 		<packagedescription><![CDATA[Implements an alternative to CodeMirror]]></packagedescription>
-		<version>1.0.0</version>
-		<date>2017-11-05</date>
+		<version>1.0.1</version>
+		<date>2018-02-23</date>
 	</packageinformation>
 
 	<authorinformation>
@@ -14,15 +14,12 @@
 
 	<compatibility>
 		<api version="2018" />
+		<api version="2017" />
 	</compatibility>
 
 	<requiredpackages>
 		<requiredpackage minversion="3.0.0">com.woltlab.wcf</requiredpackage>
 	</requiredpackages>
-
-	<excludedpackages>
-		<excludedpackage version="3.2.0 Alpha 1">com.woltlab.wcf</excludedpackage>
-	</excludedpackages>
 
 	<instructions type="install">
 		<instruction type="file" />
@@ -31,10 +28,7 @@
 		<instruction type="language" />
 	</instructions>
 
-	<instructions type="update" fromversion="1.0.0 Alpha 2">
+	<instructions type="update" fromversion="1.0.0">
 		<instruction type="file" />
-		<instruction type="acpTemplate" />
-		<instruction type="option" />
-		<instruction type="language" />
 	</instructions>
 </package>
