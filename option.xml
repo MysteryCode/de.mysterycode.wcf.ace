@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<data xmlns="http://www.woltlab.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.woltlab.com https://www.woltlab.com/XSD/vortex/option.xsd">
+<data xmlns="http://www.woltlab.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.woltlab.com https://www.woltlab.com/XSD/5.4/option.xsd">
 	<import>
 		<categories>
 			<category name="general.system.ace">
-				<parent>general.system</parent>
+				<parent><![CDATA[general.system]]></parent>
 			</category>
 		</categories>
 		<options>
 			<option name="ace_theme">
-				<optiontype>select</optiontype>
+				<optiontype><![CDATA[select]]></optiontype>
 				<selectoptions><![CDATA[chrome:Chrome
 github:GitHub
 monokai:Monokai
 twilight:Twilight]]></selectoptions>
-				<defaultvalue>chrome</defaultvalue>
-				<categoryname>general.system.ace</categoryname>
+				<defaultvalue><![CDATA[chrome]]></defaultvalue>
+				<categoryname><![CDATA[general.system.ace]]></categoryname>
 			</option>
 		</options>
 	</import>
