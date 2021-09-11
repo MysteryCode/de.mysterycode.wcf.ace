@@ -1,1 +1,229 @@
-ace.define("ace/ext/static_highlight",["require","exports","module","ace/edit_session","ace/layer/text","ace/config","ace/lib/dom"],function(e,t,i){"use strict";var n=e("../edit_session").EditSession,s=e("../layer/text").Text,o=e("../config"),r=e("../lib/dom"),a=function(){this.config={}};a.prototype=s.prototype;var c=function(e,t,i){var n=e.className.match(/lang-(\w+)/),s=t.mode||n&&"ace/mode/"+n[1];if(!s)return!1;var o=t.theme||"ace/theme/textmate",a="",l=[];if(e.firstElementChild)for(var h=0,d=0;d<e.childNodes.length;d++){var g=e.childNodes[d];3==g.nodeType?(h+=g.data.length,a+=g.data):l.push(h,g)}else a=r.getInnerText(e),t.trim&&(a=a.trim());c.render(a,s,o,t.firstLineNumber,!t.showGutter,function(t){r.importCssString(t.css,"ace_highlight"),e.innerHTML=t.html;for(var n=e.firstChild.firstChild,s=0;s<l.length;s+=2){var o=t.session.doc.indexToPosition(l[s]),a=l[s+1],c=n.children[o.row];c&&c.appendChild(a)}i&&i()})};c.render=function(e,t,i,s,r,a){function l(){var n=c.renderSync(e,t,i,s,r);return a?a(n):n}var h=1,d=n.prototype.$modes;"string"==typeof i&&(h++,o.loadModule(["theme",i],function(e){i=e,--h||l()}));var g;return t&&"object"==typeof t&&!t.getTokenizer&&(t=(g=t).path),"string"==typeof t&&(h++,o.loadModule(["mode",t],function(e){d[t]&&!g||(d[t]=new e.Mode(g)),t=d[t],--h||l()})),--h||l()},c.renderSync=function(e,t,i,s,o){s=parseInt(s||1,10);var r=new n("");r.setUseWorker(!1),r.setMode(t);var c=new a;c.setSession(r),r.setValue(e);for(var l=[],h=r.getLength(),d=0;d<h;d++)l.push("<div class='ace_line'>"),o||l.push("<span class='ace_gutter ace_gutter-cell' unselectable='on'></span>"),c.$renderLine(l,d,!0,!1),l.push("\n</div>");var g="<div class='"+i.cssClass+"'><div class='ace_static_highlight"+(o?"":" ace_show_gutter")+"' style='counter-reset:ace_line "+(s-1)+"'>"+l.join("")+"</div></div>";return c.destroy(),{css:".ace_static_highlight {font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', 'Droid Sans Mono', monospace;font-size: 12px;white-space: pre-wrap}.ace_static_highlight .ace_gutter {width: 2em;text-align: right;padding: 0 3px 0 0;margin-right: 3px;}.ace_static_highlight.ace_show_gutter .ace_line {padding-left: 2.6em;}.ace_static_highlight .ace_line { position: relative; }.ace_static_highlight .ace_gutter-cell {-moz-user-select: -moz-none;-khtml-user-select: none;-webkit-user-select: none;user-select: none;top: 0;bottom: 0;left: 0;position: absolute;}.ace_static_highlight .ace_gutter-cell:before {content: counter(ace_line, decimal);counter-increment: ace_line;}.ace_static_highlight {counter-reset: ace_line;}"+i.cssText,html:g,session:r}},i.exports=c,i.exports.highlight=c}),ace.require(["ace/ext/static_highlight"],function(){});
+ace.define("ace/ext/static_highlight",["require","exports","module","ace/edit_session","ace/layer/text","ace/config","ace/lib/dom","ace/lib/lang"], function(require, exports, module) {
+"use strict";
+
+var EditSession = require("../edit_session").EditSession;
+var TextLayer = require("../layer/text").Text;
+var baseStyles = ".ace_static_highlight {\
+font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', 'Droid Sans Mono', monospace;\
+font-size: 12px;\
+white-space: pre-wrap\
+}\
+.ace_static_highlight .ace_gutter {\
+width: 2em;\
+text-align: right;\
+padding: 0 3px 0 0;\
+margin-right: 3px;\
+contain: none;\
+}\
+.ace_static_highlight.ace_show_gutter .ace_line {\
+padding-left: 2.6em;\
+}\
+.ace_static_highlight .ace_line { position: relative; }\
+.ace_static_highlight .ace_gutter-cell {\
+-moz-user-select: -moz-none;\
+-khtml-user-select: none;\
+-webkit-user-select: none;\
+user-select: none;\
+top: 0;\
+bottom: 0;\
+left: 0;\
+position: absolute;\
+}\
+.ace_static_highlight .ace_gutter-cell:before {\
+content: counter(ace_line, decimal);\
+counter-increment: ace_line;\
+}\
+.ace_static_highlight {\
+counter-reset: ace_line;\
+}\
+";
+var config = require("../config");
+var dom = require("../lib/dom");
+var escapeHTML = require("../lib/lang").escapeHTML;
+
+function Element(type) {
+    this.type = type;
+    this.style = {};
+    this.textContent = "";
+}
+Element.prototype.cloneNode = function() {
+    return this;
+};
+Element.prototype.appendChild = function(child) {
+    this.textContent += child.toString();
+};
+Element.prototype.toString = function() {
+    var stringBuilder = [];
+    if (this.type != "fragment") {
+        stringBuilder.push("<", this.type);
+        if (this.className)
+            stringBuilder.push(" class='", this.className, "'");
+        var styleStr = [];
+        for (var key in this.style) {
+            styleStr.push(key, ":", this.style[key]);
+        }
+        if (styleStr.length)
+            stringBuilder.push(" style='", styleStr.join(""), "'");
+        stringBuilder.push(">");
+    }
+
+    if (this.textContent) {
+        stringBuilder.push(this.textContent);
+    }
+
+    if (this.type != "fragment") {
+        stringBuilder.push("</", this.type, ">");
+    }
+    
+    return stringBuilder.join("");
+};
+
+
+var simpleDom = {
+    createTextNode: function(textContent, element) {
+        return escapeHTML(textContent);
+    },
+    createElement: function(type) {
+        return new Element(type);
+    },
+    createFragment: function() {
+        return new Element("fragment");
+    }
+};
+
+var SimpleTextLayer = function() {
+    this.config = {};
+    this.dom = simpleDom;
+};
+SimpleTextLayer.prototype = TextLayer.prototype;
+
+var highlight = function(el, opts, callback) {
+    var m = el.className.match(/lang-(\w+)/);
+    var mode = opts.mode || m && ("ace/mode/" + m[1]);
+    if (!mode)
+        return false;
+    var theme = opts.theme || "ace/theme/textmate";
+    
+    var data = "";
+    var nodes = [];
+
+    if (el.firstElementChild) {
+        var textLen = 0;
+        for (var i = 0; i < el.childNodes.length; i++) {
+            var ch = el.childNodes[i];
+            if (ch.nodeType == 3) {
+                textLen += ch.data.length;
+                data += ch.data;
+            } else {
+                nodes.push(textLen, ch);
+            }
+        }
+    } else {
+        data = el.textContent;
+        if (opts.trim)
+            data = data.trim();
+    }
+    
+    highlight.render(data, mode, theme, opts.firstLineNumber, !opts.showGutter, function (highlighted) {
+        dom.importCssString(highlighted.css, "ace_highlight");
+        el.innerHTML = highlighted.html;
+        var container = el.firstChild.firstChild;
+        for (var i = 0; i < nodes.length; i += 2) {
+            var pos = highlighted.session.doc.indexToPosition(nodes[i]);
+            var node = nodes[i + 1];
+            var lineEl = container.children[pos.row];
+            lineEl && lineEl.appendChild(node);
+        }
+        callback && callback();
+    });
+};
+highlight.render = function(input, mode, theme, lineStart, disableGutter, callback) {
+    var waiting = 1;
+    var modeCache = EditSession.prototype.$modes;
+    if (typeof theme == "string") {
+        waiting++;
+        config.loadModule(['theme', theme], function(m) {
+            theme = m;
+            --waiting || done();
+        });
+    }
+    var modeOptions;
+    if (mode && typeof mode === "object" && !mode.getTokenizer) {
+        modeOptions = mode;
+        mode = modeOptions.path;
+    }
+    if (typeof mode == "string") {
+        waiting++;
+        config.loadModule(['mode', mode], function(m) {
+            if (!modeCache[mode] || modeOptions)
+                modeCache[mode] = new m.Mode(modeOptions);
+            mode = modeCache[mode];
+            --waiting || done();
+        });
+    }
+    function done() {
+        var result = highlight.renderSync(input, mode, theme, lineStart, disableGutter);
+        return callback ? callback(result) : result;
+    }
+    return --waiting || done();
+};
+highlight.renderSync = function(input, mode, theme, lineStart, disableGutter) {
+    lineStart = parseInt(lineStart || 1, 10);
+
+    var session = new EditSession("");
+    session.setUseWorker(false);
+    session.setMode(mode);
+
+    var textLayer = new SimpleTextLayer();
+    textLayer.setSession(session);
+    Object.keys(textLayer.$tabStrings).forEach(function(k) {
+        if (typeof textLayer.$tabStrings[k] == "string") {
+            var el = simpleDom.createFragment();
+            el.textContent = textLayer.$tabStrings[k];
+            textLayer.$tabStrings[k] = el;
+        }
+    });
+
+    session.setValue(input);
+    var length =  session.getLength();
+    
+    var outerEl = simpleDom.createElement("div");
+    outerEl.className = theme.cssClass;
+    
+    var innerEl = simpleDom.createElement("div");
+    innerEl.className = "ace_static_highlight" + (disableGutter ? "" : " ace_show_gutter");
+    innerEl.style["counter-reset"] = "ace_line " + (lineStart - 1);
+
+    for (var ix = 0; ix < length; ix++) {
+        var lineEl = simpleDom.createElement("div");
+        lineEl.className = "ace_line";
+        
+        if (!disableGutter) {
+            var gutterEl = simpleDom.createElement("span");
+            gutterEl.className ="ace_gutter ace_gutter-cell";
+            gutterEl.textContent = "";
+            lineEl.appendChild(gutterEl);
+        }
+        textLayer.$renderLine(lineEl, ix, false);
+        lineEl.textContent += "\n";
+        innerEl.appendChild(lineEl);
+    }
+    outerEl.appendChild(innerEl);
+
+    return {
+        css: baseStyles + theme.cssText,
+        html: outerEl.toString(),
+        session: session
+    };
+};
+
+module.exports = highlight;
+module.exports.highlight = highlight;
+});                (function() {
+                    ace.require(["ace/ext/static_highlight"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
+                })();
+            

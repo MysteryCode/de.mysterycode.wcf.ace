@@ -1,1 +1,213 @@
-ace.define("ace/ext/whitespace",["require","exports","module","ace/lib/lang"],function(e,t,n){"use strict";var r=e("../lib/lang");t.$detectIndentation=function(e,t){for(var n=[],r=[],i=0,o=0,a=Math.min(e.length,1e3),s=0;s<a;s++){var c=e[s];if(/^\s*[^*+\-\s]/.test(c)){if("\t"==c[0])i++,o=-Number.MAX_VALUE;else{var g=c.match(/^ */)[0].length;if(g&&"\t"!=c[g]){var h=g-o;!(h>0)||o%h||g%h||(r[h]=(r[h]||0)+1),n[g]=(n[g]||0)+1}o=g}for(;s<a&&"\\"==c[c.length-1];)c=e[s++]}}for(var l=r.reduce(function(e,t){return e+t},0),u={score:0,length:0},f=0,s=1;s<12;s++){var v=function(e){for(var t=0,r=e;r<n.length;r+=e)t+=n[r]||0;return t}(s);1==s?(f=v,v=n[1]?.9:.8,n.length||(v=0)):v/=f,r[s]&&(v+=r[s]/l),v>u.score&&(u={score:v,length:s})}if(u.score&&u.score>1.4)var d=u.length;return i>f+1?((1==d||f<i/4||u.score<1.8)&&(d=void 0),{ch:"\t",length:d}):f>i+1?{ch:" ",length:d}:void 0},t.detectIndentation=function(e){var n=e.getLines(0,1e3),r=t.$detectIndentation(n)||{};return r.ch&&e.setUseSoftTabs(" "==r.ch),r.length&&e.setTabSize(r.length),r},t.trimTrailingSpace=function(e,t){var n=e.getDocument(),r=n.getAllLines(),i=t&&t.trimEmpty?-1:0,o=[],a=-1;t&&t.keepCursorPosition&&(e.selection.rangeCount?e.selection.rangeList.ranges.forEach(function(e,t,n){var r=n[t+1];r&&r.cursor.row==e.cursor.row||o.push(e.cursor)}):o.push(e.selection.getCursor()),a=0);for(var s=o[a]&&o[a].row,c=0,g=r.length;c<g;c++){var h=r[c],l=h.search(/\s+$/);c==s&&(l<o[a].column&&l>i&&(l=o[a].column),s=o[++a]?o[a].row:-1),l>i&&n.removeInLine(c,l,h.length)}},t.convertIndentation=function(e,t,n){var i=e.getTabString()[0],o=e.getTabSize();n||(n=o),t||(t=i);for(var a="\t"==t?t:r.stringRepeat(t,n),s=e.doc,c=s.getAllLines(),g={},h={},l=0,u=c.length;l<u;l++){var f=c[l].match(/^\s*/)[0];if(f){var v=e.$getStringScreenWidth(f)[0],d=Math.floor(v/o),m=v%o,p=g[d]||(g[d]=r.stringRepeat(a,d));(p+=h[m]||(h[m]=r.stringRepeat(" ",m)))!=f&&(s.removeInLine(l,0,f.length),s.insertInLine({row:l,column:0},p))}}e.setTabSize(n),e.setUseSoftTabs(" "==t)},t.$parseStringArg=function(e){var t={};/t/.test(e)?t.ch="\t":/s/.test(e)&&(t.ch=" ");var n=e.match(/\d+/);return n&&(t.length=parseInt(n[0],10)),t},t.$parseArg=function(e){return e?"string"==typeof e?t.$parseStringArg(e):"string"==typeof e.text?t.$parseStringArg(e.text):e:{}},t.commands=[{name:"detectIndentation",exec:function(e){t.detectIndentation(e.session)}},{name:"trimTrailingSpace",exec:function(e){t.trimTrailingSpace(e.session)}},{name:"convertIndentation",exec:function(e,n){var r=t.$parseArg(n);t.convertIndentation(e.session,r.ch,r.length)}},{name:"setIndentation",exec:function(e,n){var r=t.$parseArg(n);r.length&&e.session.setTabSize(r.length),r.ch&&e.session.setUseSoftTabs(" "==r.ch)}}]}),ace.require(["ace/ext/whitespace"],function(){});
+ace.define("ace/ext/whitespace",["require","exports","module","ace/lib/lang"], function(require, exports, module) {
+"use strict";
+
+var lang = require("../lib/lang");
+exports.$detectIndentation = function(lines, fallback) {
+    var stats = [];
+    var changes = [];
+    var tabIndents = 0;
+    var prevSpaces = 0;
+    var max = Math.min(lines.length, 1000);
+    for (var i = 0; i < max; i++) {
+        var line = lines[i];
+        if (!/^\s*[^*+\-\s]/.test(line))
+            continue;
+
+        if (line[0] == "\t") {
+            tabIndents++;
+            prevSpaces = -Number.MAX_VALUE;
+        } else {
+            var spaces = line.match(/^ */)[0].length;
+            if (spaces && line[spaces] != "\t") {
+                var diff = spaces - prevSpaces;
+                if (diff > 0 && !(prevSpaces%diff) && !(spaces%diff))
+                    changes[diff] = (changes[diff] || 0) + 1;
+    
+                stats[spaces] = (stats[spaces] || 0) + 1;
+            }
+            prevSpaces = spaces;
+        }
+        while (i < max && line[line.length - 1] == "\\")
+            line = lines[i++];
+    }
+    
+    function getScore(indent) {
+        var score = 0;
+        for (var i = indent; i < stats.length; i += indent)
+            score += stats[i] || 0;
+        return score;
+    }
+
+    var changesTotal = changes.reduce(function(a,b){return a+b;}, 0);
+
+    var first = {score: 0, length: 0};
+    var spaceIndents = 0;
+    for (var i = 1; i < 12; i++) {
+        var score = getScore(i);
+        if (i == 1) {
+            spaceIndents = score;
+            score = stats[1] ? 0.9 : 0.8;
+            if (!stats.length)
+                score = 0;
+        } else
+            score /= spaceIndents;
+
+        if (changes[i])
+            score += changes[i] / changesTotal;
+
+        if (score > first.score)
+            first = {score: score, length: i};
+    }
+
+    if (first.score && first.score > 1.4)
+        var tabLength = first.length;
+
+    if (tabIndents > spaceIndents + 1) {
+        if (tabLength == 1 || spaceIndents < tabIndents / 4 || first.score < 1.8)
+            tabLength = undefined;
+        return {ch: "\t", length: tabLength};
+    }
+    if (spaceIndents > tabIndents + 1)
+        return {ch: " ", length: tabLength};
+};
+
+exports.detectIndentation = function(session) {
+    var lines = session.getLines(0, 1000);
+    var indent = exports.$detectIndentation(lines) || {};
+
+    if (indent.ch)
+        session.setUseSoftTabs(indent.ch == " ");
+
+    if (indent.length)
+        session.setTabSize(indent.length);
+    return indent;
+};
+exports.trimTrailingSpace = function(session, options) {
+    var doc = session.getDocument();
+    var lines = doc.getAllLines();
+    
+    var min = options && options.trimEmpty ? -1 : 0;
+    var cursors = [], ci = -1;
+    if (options && options.keepCursorPosition) {
+        if (session.selection.rangeCount) {
+            session.selection.rangeList.ranges.forEach(function(x, i, ranges) {
+               var next = ranges[i + 1];
+               if (next && next.cursor.row == x.cursor.row)
+                  return;
+              cursors.push(x.cursor);
+            });
+        } else {
+            cursors.push(session.selection.getCursor());
+        }
+        ci = 0;
+    }
+    var cursorRow = cursors[ci] && cursors[ci].row;
+
+    for (var i = 0, l=lines.length; i < l; i++) {
+        var line = lines[i];
+        var index = line.search(/\s+$/);
+
+        if (i == cursorRow) {
+            if (index < cursors[ci].column && index > min)
+               index = cursors[ci].column;
+            ci++;
+            cursorRow = cursors[ci] ? cursors[ci].row : -1;
+        }
+
+        if (index > min)
+            doc.removeInLine(i, index, line.length);
+    }
+};
+
+exports.convertIndentation = function(session, ch, len) {
+    var oldCh = session.getTabString()[0];
+    var oldLen = session.getTabSize();
+    if (!len) len = oldLen;
+    if (!ch) ch = oldCh;
+
+    var tab = ch == "\t" ? ch: lang.stringRepeat(ch, len);
+
+    var doc = session.doc;
+    var lines = doc.getAllLines();
+
+    var cache = {};
+    var spaceCache = {};
+    for (var i = 0, l=lines.length; i < l; i++) {
+        var line = lines[i];
+        var match = line.match(/^\s*/)[0];
+        if (match) {
+            var w = session.$getStringScreenWidth(match)[0];
+            var tabCount = Math.floor(w/oldLen);
+            var reminder = w%oldLen;
+            var toInsert = cache[tabCount] || (cache[tabCount] = lang.stringRepeat(tab, tabCount));
+            toInsert += spaceCache[reminder] || (spaceCache[reminder] = lang.stringRepeat(" ", reminder));
+
+            if (toInsert != match) {
+                doc.removeInLine(i, 0, match.length);
+                doc.insertInLine({row: i, column: 0}, toInsert);
+            }
+        }
+    }
+    session.setTabSize(len);
+    session.setUseSoftTabs(ch == " ");
+};
+
+exports.$parseStringArg = function(text) {
+    var indent = {};
+    if (/t/.test(text))
+        indent.ch = "\t";
+    else if (/s/.test(text))
+        indent.ch = " ";
+    var m = text.match(/\d+/);
+    if (m)
+        indent.length = parseInt(m[0], 10);
+    return indent;
+};
+
+exports.$parseArg = function(arg) {
+    if (!arg)
+        return {};
+    if (typeof arg == "string")
+        return exports.$parseStringArg(arg);
+    if (typeof arg.text == "string")
+        return exports.$parseStringArg(arg.text);
+    return arg;
+};
+
+exports.commands = [{
+    name: "detectIndentation",
+    description: "Detect indentation from content",
+    exec: function(editor) {
+        exports.detectIndentation(editor.session);
+    }
+}, {
+    name: "trimTrailingSpace",
+    description: "Trim trailing whitespace",
+    exec: function(editor, args) {
+        exports.trimTrailingSpace(editor.session, args);
+    }
+}, {
+    name: "convertIndentation",
+    description: "Convert indentation to ...",
+    exec: function(editor, arg) {
+        var indent = exports.$parseArg(arg);
+        exports.convertIndentation(editor.session, indent.ch, indent.length);
+    }
+}, {
+    name: "setIndentation",
+    description: "Set indentation",
+    exec: function(editor, arg) {
+        var indent = exports.$parseArg(arg);
+        indent.length && editor.session.setTabSize(indent.length);
+        indent.ch && editor.session.setUseSoftTabs(indent.ch == " ");
+    }
+}];
+
+});                (function() {
+                    ace.require(["ace/ext/whitespace"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
+                })();
+            
