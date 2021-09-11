@@ -1,0 +1,13 @@
+{
+	"dependencies": {
+		"deepmerge": "^4.2.2",
+		"requirejs": "^2.3.6",
+		"terser": "^5.6.0-beta"
+	},
+	"devDependencies": {
+		"@types/md5-file": "^4.0.2",
+		"@types/node": "^14.6.0",
+		"md5-file": "^5.0.0",
+		"typescript": "^4.0.2"
+	}
+}
