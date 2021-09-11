@@ -28,6 +28,10 @@ If you want to view invisible characters you can add `$showInvisibles=true`:
 </section>
 ```
 
+Version
+---
+ACE-Version: 1.4.12
+
 Basic Support
 -------------
 If you have trouble including the ACE editor or questions feel free to ask me: [Forum](https://support.mysterycode.de/board/9-sonstige-wcf-plugins/)
