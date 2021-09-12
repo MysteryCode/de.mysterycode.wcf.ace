@@ -1,4 +1,3 @@
-const childProcess = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
@@ -32,8 +31,8 @@ const absoluteBasePath = path.toNamespacedPath(basePath) + "\\";
 		return !!(stat.isFile() && !stat.isSymbolicLink() && filename.match(/^theme-(.*)\.js$/i) && !filename.match(/\.min\.js$/i));
 	})
 	.forEach(async filename => {
-		let displayName = filename;
 		let theme = filename;
+		let displayName;
 		
 		theme = theme.replace(/\.js$/i, '');
 		theme = theme.replace(/^(theme\-)/i, '');
