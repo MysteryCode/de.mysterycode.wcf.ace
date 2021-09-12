@@ -1,6 +1,9 @@
 {if !$aceLoaded|isset}
 	{js application='wcf' lib='ace/ace'}
 	{assign var='aceLoaded' value=true}
+	<script data-relocate="true">
+		ace.config.set('basePath', '{@$__wcf->getPath()}js/3rdParty/ace/');
+	</script>
 {/if}
 {event name='javascriptIncludes'}
 
@@ -17,7 +20,7 @@
 				editorContainer.classList.add('aceInstance');
 				element.parentNode.insertBefore(editorContainer, element);
 
-				const editor = ace.editor(editorContainerId);
+				const editor = ace.edit(editorContainerId);
 				editor.setTheme('ace/theme/{ACE_THEME}');
 				{if $aceMode == 'php-start'}
 					editor.getSession().$options['startState'] = { name: 'startState', value: 'start' }; editor.getSession().setOptions({ startState: 'php-start' });
@@ -27,9 +30,9 @@
 				editor.setShowPrintMargin(false);
 				editor.getSession().setUseSoftTabs(false);
 				{if $showInvisibles|isset && $showInvisibles}editor.setShowInvisibles(true);{/if}
-				editor.getSession().setValue(textarea.value);
+				editor.getSession().setValue(element.value);
 				editor.getSession().on('change', () => {
-					textarea.value = editor.getSession().getValue();
+					element.value = editor.getSession().getValue();
 				});
 
 				{event name='aceInit'}
