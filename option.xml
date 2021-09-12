@@ -46,7 +46,7 @@ tomorrow_night_eighties:Tomorrow Night Eighties
 twilight:Twilight
 vibrant_ink:Vibrant Ink
 xcode:Xcode]]></selectoptions>
-				<defaultvalue><![CDATA[chrome]]></defaultvalue>
+				<defaultvalue><![CDATA[twilight]]></defaultvalue>
 				<categoryname><![CDATA[general.system.ace]]></categoryname>
 			</option>
 		</options>
