@@ -3,7 +3,7 @@
 	<packageinformation>
 		<packagename>ACE Codeeditor</packagename>
 		<packagedescription><![CDATA[Implements an alternative to CodeMirror]]></packagedescription>
-		<version>1.1.1</version>
+		<version>1.1.2</version>
 		<date>2021-09-12</date>
 	</packageinformation>
 	
@@ -34,5 +34,10 @@
 		<instruction type="file" />
 		<instruction type="acpTemplate" />
 		<instruction type="template" />
+		
+		<instruction type="option" />
+	</instructions>
+	<instructions type="update" fromversion="1.1.1">
+		<instruction type="option" />
 	</instructions>
 </package>
