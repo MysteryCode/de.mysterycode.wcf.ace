@@ -3,8 +3,8 @@
 	<packageinformation>
 		<packagename>ACE Codeeditor</packagename>
 		<packagedescription><![CDATA[Implements an alternative to CodeMirror]]></packagedescription>
-		<version>1.1.2</version>
-		<date>2021-09-12</date>
+		<version>1.1.3</version>
+		<date>2022-20-30</date>
 	</packageinformation>
 	
 	<authorinformation>
@@ -17,7 +17,7 @@
 	</requiredpackages>
 	
 	<excludedpackages>
-		<excludedpackage version="5.5.0 Alpha 1">com.woltlab.wcf</excludedpackage>
+		<excludedpackage version="6.1.0 Alpha 1">com.woltlab.wcf</excludedpackage>
 	</excludedpackages>
 	
 	<instructions type="install">
@@ -30,14 +30,9 @@
 		<instruction type="language" />
 	</instructions>
 	
-	<instructions type="update" fromversion="1.1.0">
+	<instructions type="update" fromversion="1.1.2">
 		<instruction type="file" />
-		<instruction type="acpTemplate" />
-		<instruction type="template" />
 		
-		<instruction type="option" />
-	</instructions>
-	<instructions type="update" fromversion="1.1.1">
 		<instruction type="option" />
 	</instructions>
 </package>
