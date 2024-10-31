@@ -23,13 +23,16 @@
 				const editor = ace.edit(editorContainerId);
 				editor.setTheme('ace/theme/{ACE_THEME}');
 				{if $aceMode == 'php-start'}
-					editor.getSession().$options['startState'] = { name: 'startState', value: 'start' }; editor.getSession().setOptions({ startState: 'php-start' });
-			    		{assign var=aceMode value='php'}
+					editor.getSession().$options['startState'] = { name: 'startState', value: 'start' };
+					editor.getSession().setOptions({ startState: 'php-start' });
+					{assign var=aceMode value='php'}
 				{/if}
 				editor.getSession().setMode('ace/mode/{@$aceMode|encodeJS}');
 				editor.setShowPrintMargin(false);
 				editor.getSession().setUseSoftTabs(false);
-				{if $showInvisibles|isset && $showInvisibles}editor.setShowInvisibles(true);{/if}
+				{if $showInvisibles|isset && $showInvisibles}
+					editor.setShowInvisibles(true);
+				{/if}
 				editor.getSession().setValue(element.value);
 				editor.getSession().on('change', () => {
 					element.value = editor.getSession().getValue();
